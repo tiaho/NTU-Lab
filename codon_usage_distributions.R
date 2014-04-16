@@ -1,6 +1,6 @@
 setwd('~/Desktop/Lab/DataFiles/')
 
-# reads in the codon usage counts for the genome
+# reads in the codon usage counts for all coding sequences
 codon_usage <- read.table('codon_usage_counts.txt', sep = ",")
 colnames(codon_usage) <- c('codon', 'count', 'type')
 codon_usage <- codon_usage[order(codon_usage$codon, decreasing = FALSE), ] # sorts alphabetically
