@@ -54,13 +54,13 @@ README.md
 * old script, refer to start_stop_codon_usage_cds_length.pl
 
 ###split_gff_file.pl
-* splits a gff file by chromosome (currently hard coded for *C. elegans*)
+* splits a gff file by chromosome (currently hard coded for *C. elegans*). need to manually change file name each time!
 
 ###start_stop_codon_distributions.R
 * plots the distribution of the start and stop codon usage
 
 ###start_stop_codon_usage.pl
-* caculates the usage of start and stop codons
+* calculates the usage of start and stop codons
 
 ###start_stop_codon_usage_cds_length.pl
 * does too many things...
