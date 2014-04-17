@@ -17,9 +17,6 @@ README.md
 ###compare_support_for_isoforms.pl
 * wrapper script for coordinate_extracter.pl and find_overlapping_features2.pl
 
-###coordinate_extracter.pl
-* extracts the lines in the gff file that are within the range of a gene's coordinates
-
 ###exon_intron_length_distribution.R
 * plots the distribution of exon and intron lengths
 
@@ -61,6 +58,9 @@ README.md
 
 ###start_stop_codon_distributions.R
 * plots the distribution of the start and stop codon usage
+
+###start_stop_codon_usage.pl
+* caculates the usage of start and stop codons
 
 ###start_stop_codon_usage_cds_length.pl
 * does too many things...
