@@ -13,11 +13,16 @@
 use strict; use warnings;
 use File::Slurp;
 
+# determines if user wants exon or intron lengths to be outputted
+die "Usage: exon_intron_lengths.pl <exon OR intron>\n" unless @ARGV == 1 and ($ARGV[0] eq "exon" or $ARGV[0] eq "intron");
+my $type = $ARGV[0];
+
+
 # the input files
 my @gff_files = ("chromI_curated_exon.gff2", "chromII_curated_exon.gff2", "chromIII_curated_exon.gff2", "chromIV_curated_exon.gff2", "chromV_curated_exon.gff2", "chromX_curated_exon.gff2");
 
 # runs the script for each of the 6 chromosomes of C elegans
-for (my $i = 0; $i <= 5; $i++){
+for (my $i = 0; $i <= 1; $i++){
 	makes_file($gff_files[$i]);
 	my $extracted_file_name = "extracted_" . $gff_files[$i];
 	my $sorted_file_name = "sorted_" . $extracted_file_name;
@@ -72,13 +77,13 @@ sub get_intron_exon_lengths{
 	my @file = <$in>;
 	my $file_length = scalar(@file);
 	
-	for(my $i = 0; $i <= $file_length - 1; $i++){ # -1 because array indices start at 0
+	for (my $i = 0; $i <= $file_length - 1; $i++){ # -1 because array indices start at 0
 		die "$i\n" unless chomp $file[$i];
 		my ($chromosome, $source, $feature, $start, $stop, $id) = split(" ", $file[$i]);
 		
 		# calculates exon length
 		my $exon_length = $stop + 1 - $start; # +1 because want to include both ends of the exon
-# 		print"$exon_length, $chromosome, $id\n";
+		if ($type eq "exon") {print"$exon_length, $chromosome, $id\n";}
 		
 		# calculates intron length
 		if ($i == 0){
@@ -87,7 +92,7 @@ sub get_intron_exon_lengths{
 			my (undef, undef, $prev_feature, $prev_start, $prev_stop, $prev_id) = split(" ", $file[$i - 1]);
 			if ($id eq $prev_id){
 				my $intron_length = $start - $prev_stop - 1; # -1 b/c doesn't include the exon start/end
-				print"$intron_length, $chromosome, $id\n";
+				if ($type eq "intron") {print"$intron_length, $chromosome, $id\n";}
 			}else{ # id and prev id aren't the same
 				# do nothing
 			}
