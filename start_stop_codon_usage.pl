@@ -32,7 +32,6 @@ for (my $i = 0; $i <= 1; $i++){
 
 # prints the start codons and counts
 if ($type eq "start"){
-	print "---Start codons---\n";
 	for my $key (keys %total_start_codons){
 		print"$key, $total_start_codons{$key}\n";
 	}
@@ -40,7 +39,6 @@ if ($type eq "start"){
 
 # prints the stop codons and counts
 if ($type eq "stop"){
-	print "\n---Stop codons---\n";
 	for my $key (keys %total_stop_codons){
 		print"$key, $total_stop_codons{$key}\n";
 	}
