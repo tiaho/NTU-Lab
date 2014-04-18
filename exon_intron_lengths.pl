@@ -22,7 +22,7 @@ my $type = $ARGV[0];
 my @gff_files = ("chromI_curated_exon.gff2", "chromII_curated_exon.gff2", "chromIII_curated_exon.gff2", "chromIV_curated_exon.gff2", "chromV_curated_exon.gff2", "chromX_curated_exon.gff2");
 
 # runs the script for each of the 6 chromosomes of C elegans
-for (my $i = 0; $i <= 1; $i++){
+for (my $i = 0; $i <= 5; $i++){
 	makes_file($gff_files[$i]);
 	my $extracted_file_name = "extracted_" . $gff_files[$i];
 	my $sorted_file_name = "sorted_" . $extracted_file_name;
