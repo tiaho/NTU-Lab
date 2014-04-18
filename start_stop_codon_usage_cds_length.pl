@@ -6,7 +6,7 @@
 #
 # prints the start/stop codons and counts
 # check if start coordinate > stop coordinate
-# prints the codon usage counts for the coding sequences
+# prints the codon usage counts for all the coding sequences
 # prints the CDS lengths
 # checks for frameshifts
 # prints the codon usage counts for introns
@@ -53,18 +53,18 @@ for my $cdsID (keys %gene_codon_usage){
 	}
 }
 
-# sums up the number of codons in the genome
+# sums up the number of codons in all coding sequences
 my $genome_sum = 0;
 for my $key (keys %total_codon_usage){
 	$genome_sum += $total_codon_usage{$key};
 }
 
-# # prints the genome codon usage counts
+# # prints the codon usage counts of all coding sequences
 # for my $key (keys %total_codon_usage){
 # 	print"$key, $total_codon_usage{$key}, genome\n";
 # }
 
-# converts the codon usage counts for the genome to frequencies
+# converts the codon usage counts for all the coding sequences to frequencies
 for my $key (keys %total_codon_usage){ # $key = codon
 	$total_codon_usage{$key} = $total_codon_usage{$key} / $genome_sum;
 # 	print"$key, $total_codon_usage{$key}\n";
@@ -272,7 +272,7 @@ sub check_codon_usage{
 	$gene_codon_usage{$key}{chromosome} = $$cds_seq_ref{$key}{chromosome};
 # 	print"$gene_codon_usage{$key}{chromosome}\n";
 	
-	# for whole genome
+	# for all the coding sequences
     for (my $i = 1; $i <= $seq_length; $i += 3){
 		my $codon = substr($CDS, $i - 1, 3);
 		if (exists $$genome_codon_usage_ref{$codon}) {$$genome_codon_usage_ref{$codon}++;}

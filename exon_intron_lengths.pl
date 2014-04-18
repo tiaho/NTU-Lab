@@ -2,7 +2,9 @@
 #
 # exon_intron_lengths.pl
 #
-#  uses these source/feature types: curated exon
+# calculates the lengths of exons and introns - current working version 
+#
+# uses these source/feature types: curated exon
 #
 # prints the exon lengths
 # prints the intron lengths

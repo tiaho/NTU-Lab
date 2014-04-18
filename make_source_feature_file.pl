@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 #
 # make_source_feature_file.pl
-# writes out to a file with only the desired source/feature combinations
+# makes a file that contains only the single desired source/feature combination
+
 use strict; use warnings;
 
 

@@ -2,6 +2,8 @@
 #
 # compare_support_for_isoforms.pl
 #
+# wrapper script for coordinate_extracter.pl and find_overlapping_features2.pl
+#
 # <runs the list of wormbase gene IDs, extracts lines in the file that are in the coordinate range of the gene,
 #    then finds the coding exons of the gene and compares them for each isoform to see how they overlap with the other source/feature combos>
 # Input: file with gene IDs, gff file, parameters file

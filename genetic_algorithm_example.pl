@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 #
 # genetic_algorithm_example.pl
+#
+# example of a genetic algorithm using shapes and their areas
+
 use strict; use warnings;
 use Math::Trig;
 

@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 #
 # rank_genes_zscore.pl
+# calculates a z score for each gene based on various factors (does same thing as compare_gene_rankings.R)
+#
 # ranks genes by z score
 # ranks based on cds length, exon length, intron length, codon usage
 

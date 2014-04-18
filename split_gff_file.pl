@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
 # split_gff_file.pl
-# splits the gff file by chromosome
-# REMINDER change outfile names each time
+# splits a gff file by chromosome (currently hard coded for *C. elegans*). need to manually change file name each time!
+
 use strict; use warnings;
 
 
