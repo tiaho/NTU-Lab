@@ -13,6 +13,12 @@ README.md
 ###cds_length_distributions.R
 * plots the distribution of the CDS lengths
 
+###cds_lengths.pl
+* calculates the lengths of the coding sequences
+
+###check_start_stop_coords.pl
+* checks if the start coordinate comes after the stop coordinate
+
 ###compare_gene_rankings.R
 * calculates a z score for each gene based on various factors (does same thing as rank_genes_zscores.pl)
 
@@ -30,6 +36,9 @@ README.md
 
 ###exon_length_distributions.R
 * plots the distribution of exon lengths
+
+###frameshifts.pl
+* checks for frameshifts
 
 ###genes_zscore_rank_distribution.R
 * plots the distribution of the ranking of the genes (z-score method)
