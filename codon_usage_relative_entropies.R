@@ -1,3 +1,6 @@
+# codon_usage_relative_entropies.R
+# plots the distribution of the KL distances for the codon usages in all genes
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 codon_usage <- read.table('gene_codon_usage_relative_entropies.txt', sep = ",")

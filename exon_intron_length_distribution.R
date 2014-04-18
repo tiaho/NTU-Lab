@@ -1,3 +1,6 @@
+# exon_intron_length_distribution.R
+# plots the distribution of exon and intron lengths
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 # imports exons

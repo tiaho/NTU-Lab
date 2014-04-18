@@ -1,3 +1,6 @@
+# start_stop_codon_distributions.R
+# plots the distribution of the start and stop codon usage
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 start_codon <- read.csv('start_codon_distribution.csv', header = FALSE)

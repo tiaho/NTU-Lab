@@ -1,3 +1,6 @@
+# codon_usage_distributions.R
+# plots the distribution of the codon usage for all the coding sequences
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 # reads in the codon usage counts for all coding sequences

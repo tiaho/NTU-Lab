@@ -1,3 +1,6 @@
+# intron_length_distribution.R
+# plots the distribution of intron lengths
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 intron_lengths <- read.table('intron_lengths.txt', sep = ",")

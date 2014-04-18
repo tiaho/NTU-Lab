@@ -1,3 +1,6 @@
+# exon_length_distribution.R
+# plots the distribution of exon lengths
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 exon_lengths <- read.table('exon_lengths.txt', sep = ",")

@@ -1,3 +1,6 @@
+# prelim_ranking_scores.R
+# plots the distribution of the preliminary ranking scores (scored by # of overlapping bases)
+
 setwd("~/Desktop/Lab/DataFiles/")
 
 scores <- read.table("prelim_ranking_scores.txt", sep = " ")

@@ -1,3 +1,6 @@
+# genes_zscore_rank_distribution.R
+# plots the distribution of the ranking of the genes (z-score method)
+
 setwd("~/Desktop/Lab/DataFiles/")
 
 zscores = read.table("zscore_rankings.txt", sep = ",")

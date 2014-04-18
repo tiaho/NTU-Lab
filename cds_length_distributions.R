@@ -1,3 +1,6 @@
+# cds_length_distributions.R
+# plots the distribution of the CDS lengths
+
 setwd('~/Desktop/Lab/DataFiles/')
 
 cds_lengths <- read.table('cds_lengths.txt', sep = ",")

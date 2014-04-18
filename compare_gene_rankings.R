@@ -1,4 +1,6 @@
 # compare_gene_rankings.R
+# calculates a z score for each gene based on various factors (does same thing as rank_genes_zscores.pl)
+
 # ranks the genes based on several features, ranks by total number of z scores away from mean
 # ranks based on cds length, exon length, intron length, codon usage
 #
