@@ -1,15 +1,17 @@
 README.md
-
 #Description of the files
+
+###cds_codon_usage.pl
+* calculates the usage of codons for all the coding sequences
+
+###cds_codon_usage_distributions.R
+* plots the distribution of the codon usage for all the coding sequences
+
+###cds_codon_usage_relative_entropies.R
+* plots the distribution of the KL distances for the codon usages in all genes
 
 ###cds_length_distributions.R
 * plots the distribution of the CDS lengths
-
-###codon_usage_distributions.R
-* plots the distribution of the codon usage for all the coding sequences
-
-###codon_usage_relative_entropies.R
-* plots the distribution of the KL distances for the codon usages in all genes
 
 ###compare_gene_rankings.R
 * calculates a z score for each gene based on various factors (does same thing as rank_genes_zscores.pl)
@@ -20,11 +22,11 @@ README.md
 ###exon_intron_length_distribution.R
 * plots the distribution of exon and intron lengths
 
-###exon_intron_lengths_old.pl
-* calculates the lengths of exons and introns - old version
-
 ###exon_intron_lengths.pl
 * calculates the lengths of exons and introns - current working version 
+
+###exon_intron_lengths_old.pl
+* calculates the lengths of exons and introns - old version
 
 ###exon_length_distributions.R
 * plots the distribution of exon lengths
