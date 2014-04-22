@@ -1,14 +1,14 @@
 README.md
 #Description of the files
 
-###cds_codon_usage.pl
-* calculates the usage of codons for all the coding sequences
+###cds_codon_composition.pl
+* calculates the composition of codons for all the coding sequences
 
-###cds_codon_usage_distributions.R
-* plots the distribution of the codon usage for all the coding sequences
+###cds_codon_composition_distributions.R
+* plots the distribution of the codon composition for all the coding sequences
 
-###cds_codon_usage_relative_entropies.R
-* plots the distribution of the KL distances for the codon usages in all genes
+###cds_codon_composition_relative_entropies.R
+* plots the distribution of the KL distances for the codon composition in all genes
 
 ###cds_length_distributions.R
 * plots the distribution of the CDS lengths
@@ -64,14 +64,17 @@ README.md
 ###sanity_check_OLD_SCRIPT.pl
 * old script, refer to start_stop_codon_usage_cds_length.pl
 
+###splice_site_composition.pl
+* calculates the composition of the splice sites
+
 ###split_gff_file.pl
 * splits a gff file by chromosome (currently hard coded for *C. elegans*). need to manually change file name each time!
 
 ###start_stop_codon_distributions.R
 * plots the distribution of the start and stop codon usage
 
-###start_stop_codon_usage.pl
-* calculates the usage of start and stop codons
+###start_stop_codon_composition.pl
+* calculates the composition of start and stop codons
 
 ###start_stop_codon_usage_cds_length.pl
 * does too many things...
