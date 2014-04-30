@@ -9,13 +9,15 @@ use strict; use warnings;
 use File::Slurp;
 use Data::Dumper;
 
-# keep all the curated exon start/stop coordinate in a hash, with the key = cdID and keep a counter variable for num of exons
+# calculate the frequency (percentage) of each letter at a given spot (from genomic data)
+# calculate the frequency we'd expect to see each of the actual given combinations (for each donor/acceptor site)
+# average that frequency for each CDS
+# z-scores of how different each of them are from the mean frequency
 
-# store each chromosome info in a different hash?
-# extract the fastfa file for each choromosome into a different variable
+# what to do with those 
 
 # hashes
-my (%exon_coords, %genome_splice_sites, %splice_sites);
+my (%exon_coords, %genome_splice_sites, %genome_splice_site_count, %genome_splice_site_freq, %splice_sites);
 
 # the input files
 my @fasta_files = ("xx01", "xx02", "xx03", "xx04", "xx05", "xx06");
@@ -28,11 +30,12 @@ for (my $i = 0; $i <= 0; $i++){
 	# extracts the coordinates of the exons for each gene
 	extract_coords($gff_files[$i]);
 
+
 	# reads in the fasta files into a string
 	$sequences[$i] = read_sequence($fasta_files[$i]);
 }
-# print Dumper %exon_coords;
 
+# extracts the splice sites
 for my $cdsID (keys %exon_coords){
 	my $genome_seq;
 
@@ -57,15 +60,37 @@ for my $cdsID (keys %exon_coords){
 	
 }
 
-# reverses the sequences on the opposite strand
-# for my $key (keys %exon_coords){
-# 	if ($exon_coords{$key}{strand} eq "-"){
-# 		$exon_coords{$key}{seq} =~ tr/atcg/tagc/;
-# 		$exon_coords{$key}{seq} = reverse($exon_coords{$key}{seq});
+# print Dumper %genome_splice_sites;
+print Dumper %splice_sites;
+
+# calculates the # of each nucleotide at each position for splice donors/acceptors
+# for my $type (keys %genome_splice_sites){
+# 	for my $site (keys % {$genome_splice_sites{$type} }){
+# 		for (my $i = 0; $i <= 4; $i++){
+# 			my $nuc = substr($site, $i, 1);
+# 			if (exists $genome_splice_site_count{$type}{$i + 1}{$nuc}) {$genome_splice_site_count{$type}{$i + 1}{$nuc} += $genome_splice_sites{$type};}
+# 			else {$genome_splice_site_count{$type}{$i + 1}{$nuc} = $genome_splice_sites{$type};}
+# 		}
 # 	}
 # }
+# print Dumper %genome_splice_site_count;
 
-print Dumper %genome_splice_sites;
+# calculates the frequency of each nucleotide at each position for splice donors/acceptors
+# for my $type (keys %genome_splice_site_count){
+# 	for (my $i = 1; $i <= 5; $i++){
+# 		my $a = $genome_splice_site_count{$type}{$i}{a};
+# 		my $c = $genome_splice_site_count{$type}{$i}{c};
+# 		my $g = $genome_splice_site_count{$type}{$i}{g};
+# 		my $t = $genome_splice_site_count{$type}{$i}{t};
+# 		my $total = $a + $c + $g + $t;
+# 
+# 		$genome_splice_site_freq{$type}{$i}{a} = $a/$total;
+# 		$genome_splice_site_freq{$type}{$i}{c} = $c/$total;
+# 		$genome_splice_site_freq{$type}{$i}{g} = $g/$total;
+# 		$genome_splice_site_freq{$type}{$i}{t} = $t/$total;
+# 	}
+# }
+# print Dumper %genome_splice_site_freq;
 
 #################
 ###SUBROUTINES###
@@ -121,61 +146,89 @@ sub extract_cds{
 	else {$exon_coords{$cdsID}{seq} = $cds_seq;}
 }
 
-# extracts the splice sites            ONLY LOOK AT POSITIVE STRANDS FIRST
+# extracts the splice sites
 sub extract_splice_sites{
 	my ($position, $sequence, $cdsID, $strand, $start, $stop) = @_;
 	
 	my ($splice1, $splice2);
 	
 	if ($position eq "beg"){
-		# extract 2 bases after the stop codon
-		$splice1 = substr($sequence, $stop, 2); # wants to start at the base after the stop codon
+		# extract 5 bases after the stop codon
+		$splice1 = substr($sequence, $stop, 5); # wants to start at the base after the stop codon
 		if ($strand eq "+"){
+			# stores in a hash for keep count for the whole genome
 			if (exists $genome_splice_sites{donor}{$splice1}) {$genome_splice_sites{donor}{$splice1}++;}
 			else {$genome_splice_sites{donor}{$splice1} = 1;}
+			# stores in a hash to keep count for each CDS
+			if (exists $splice_sites{$cdsID}{donor}{$splice1}) {$splice_sites{$cdsID}{donor}{$splice1}++;}
+			else {$splice_sites{$cdsID}{donor}{$splice1} = 1;}
 		}
 		if ($strand eq "-"){
 			$splice1 =~ tr/acgt/tgca/;
 			$splice1 = reverse($splice1);
+			# stores in a hash for keep count for the whole genome
 			if (exists $genome_splice_sites{acceptor}{$splice1}) {$genome_splice_sites{acceptor}{$splice1}++;}
 			else {$genome_splice_sites{acceptor}{$splice1} = 1;}
+			# stores in a hash to keep count for each CDS
+			if (exists $splice_sites{$cdsID}{acceptor}{$splice1}) {$splice_sites{$cdsID}{acceptor}{$splice1}++;}
+			else {$splice_sites{$cdsID}{acceptor}{$splice1} = 1;}
 		}
 
 # 		print"$splice1\n";
 	} elsif ($position eq "end"){
 		# extract 2 bases before the start codon
-		$splice2 = substr($sequence, $start - 3, 2); # wants to start 2 bases before the start codon
+		$splice2 = substr($sequence, $start - 6, 5); # wants to start 2 bases before the start codon
 		if ($strand eq "+"){
+			# stores in a hash for keep count for the whole genome
 			if (exists $genome_splice_sites{acceptor}{$splice2}) {$genome_splice_sites{acceptor}{$splice2}++;}
 			else {$genome_splice_sites{acceptor}{$splice2} = 1;}
+			# stores in a hash to keep count for each CDS
+			if (exists $splice_sites{$cdsID}{acceptor}{$splice2}) {$splice_sites{$cdsID}{acceptor}{$splice2}++;}
+			else {$splice_sites{$cdsID}{acceptor}{$splice2} = 1;}
 		}
 		if ($strand eq "-"){
 			$splice2 =~ tr/acgt/tgca/;
 			$splice2 = reverse($splice2);
+			# stores in a hash for keep count for the whole genome
 			if (exists $genome_splice_sites{donor}{$splice2}) {$genome_splice_sites{donor}{$splice2}++;}
 			else {$genome_splice_sites{donor}{$splice2} = 1;}
+			# stores in a hash to keep count for each CDS
+			if (exists $splice_sites{$cdsID}{donor}{$splice2}) {$splice_sites{$cdsID}{donor}{$splice2}++;}
+			else {$splice_sites{$cdsID}{donor}{$splice2} = 1;}
 		}
 
 # 		print"$splice2\n";
 	} else{
 		# extract both 2 bases before start codon and 2 bases after stop codon
-		$splice1 = substr($sequence, $stop, 2);
-		$splice2 = substr($sequence, $start - 3, 2);
+		$splice1 = substr($sequence, $stop, 5);
+		$splice2 = substr($sequence, $start - 6, 5);
 		if ($strand eq "+"){
+			# stores in a hash for keep count for the whole genome
 			if (exists $genome_splice_sites{donor}{$splice1}) {$genome_splice_sites{donor}{$splice1}++;}
 			else {$genome_splice_sites{donor}{$splice1} = 1;}
 			if (exists $genome_splice_sites{acceptor}{$splice2}) {$genome_splice_sites{acceptor}{$splice2}++;}
 			else {$genome_splice_sites{acceptor}{$splice2} = 1;}
+			# stores in a hash to keep count for each CDS
+			if (exists $splice_sites{$cdsID}{donor}{$splice1}) {$splice_sites{$cdsID}{donor}{$splice1}++;}
+			else {$splice_sites{$cdsID}{donor}{$splice1} = 1;}
+			if (exists $splice_sites{$cdsID}{acceptor}{$splice2}) {$splice_sites{$cdsID}{acceptor}{$splice2}++;}
+			else {$splice_sites{$cdsID}{acceptor}{$splice2} = 1;}
 		}
 		if ($strand eq "-"){
 			$splice1 =~ tr/acgt/tgca/;
 			$splice1 = reverse($splice1);
 			$splice2 =~ tr/acgt/tgca/;
 			$splice2 = reverse($splice2);
+			# stores in a hash for keep count for the whole genome
 			if (exists $genome_splice_sites{acceptor}{$splice1}) {$genome_splice_sites{acceptor}{$splice1}++;}
 			else {$genome_splice_sites{acceptor}{$splice1} = 1;}
 			if (exists $genome_splice_sites{donor}{$splice2}) {$genome_splice_sites{donor}{$splice2}++;}
 			else {$genome_splice_sites{donor}{$splice2} = 1;}
+			# stores in a hash to keep count for each CDS
+			if (exists $splice_sites{$cdsID}{acceptor}{$splice1}) {$splice_sites{$cdsID}{acceptor}{$splice1}++;}
+			else {$splice_sites{$cdsID}{acceptor}{$splice1} = 1;}
+			if (exists $splice_sites{$cdsID}{donor}{$splice2}) {$splice_sites{$cdsID}{donor}{$splice2}++;}
+			else {$splice_sites{$cdsID}{donor}{$splice2} = 1;}
 		}
 # 		print"$splice1 \t $splice2\n";
 	}
