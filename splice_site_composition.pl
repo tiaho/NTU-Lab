@@ -3,7 +3,7 @@
 # splice_site_composition.pl
 #
 # calculates the composition of the splice sites
-# uses source/feature: gene gene
+# uses source/feature: curated exon
 
 use strict; use warnings;
 use File::Slurp;
@@ -14,10 +14,12 @@ use Data::Dumper;
 # average that frequency for each CDS
 # z-scores of how different each of them are from the mean frequency
 
-# what to do with those 
+# user either enters "donor" or "acceptor" to indicate which info they want
+die "Usage: splice_site_composition.pl <donor OR acceptor>" unless (@ARGV == 1) and ( ($ARGV[0] eq "donor") or ($ARGV[0] eq "acceptor") );
+my $desired_type = $ARGV[0];
 
 # hashes
-my (%exon_coords, %genome_splice_sites, %genome_splice_site_count, %genome_splice_site_freq, %splice_sites);
+my (%exon_coords, %splice_sites, %splice_site_probability, %genome_splice_site_count, %genome_splice_site_freq);
 
 # the input files
 my @fasta_files = ("xx01", "xx02", "xx03", "xx04", "xx05", "xx06");
@@ -25,20 +27,22 @@ my @gff_files = ("chromI_curated_exon.gff2", "chromII_curated_exon.gff2", "chrom
 my @sequences = my ($I, $II, $III, $IV, $V, $X);
 
 # extracts curated exon coordinates and reads in the genomic seqence for each of the 6 chromosomes of C elegans
-for (my $i = 0; $i <= 0; $i++){
+for (my $i = 0; $i <= 5; $i++){
 	
 	# extracts the coordinates of the exons for each gene
 	extract_coords($gff_files[$i]);
 
-
 	# reads in the fasta files into a string
 	$sequences[$i] = read_sequence($fasta_files[$i]);
 }
+# print Dumper %exon_coords;
 
 # extracts the splice sites
 for my $cdsID (keys %exon_coords){
 	my $genome_seq;
 
+	if ($exon_coords{$cdsID}{count} == 1) {next;}
+	
 	# assigns the correct genomic sequence for each chromosome
 	if ($exon_coords{$cdsID}{chromosome} eq "I") {$genome_seq = $sequences[0];}
 	elsif ($exon_coords{$cdsID}{chromosome} eq "II") {$genome_seq = $sequences[1];}
@@ -48,8 +52,6 @@ for my $cdsID (keys %exon_coords){
 	elsif ($exon_coords{$cdsID}{chromosome} eq "X") {$genome_seq = $sequences[5];}
 
 	for (my $i = 1; $i <= $exon_coords{$cdsID}{count}; $i++){
-# 		extract_cds($genome_seq, $cdsID, $exon_coords{$cdsID}{strand}, $exon_coords{$cdsID}{$i}{start}, $exon_coords{$cdsID}{$i}{stop});
-
 		# extracts splice sites
 		my $position;
 		if ($i == 1) {$position = "beg";}
@@ -59,38 +61,76 @@ for my $cdsID (keys %exon_coords){
 	}
 	
 }
+# print Dumper %splice_sites;
 
-# print Dumper %genome_splice_sites;
-print Dumper %splice_sites;
-
-# calculates the # of each nucleotide at each position for splice donors/acceptors
-# for my $type (keys %genome_splice_sites){
-# 	for my $site (keys % {$genome_splice_sites{$type} }){
-# 		for (my $i = 0; $i <= 4; $i++){
-# 			my $nuc = substr($site, $i, 1);
-# 			if (exists $genome_splice_site_count{$type}{$i + 1}{$nuc}) {$genome_splice_site_count{$type}{$i + 1}{$nuc} += $genome_splice_sites{$type};}
-# 			else {$genome_splice_site_count{$type}{$i + 1}{$nuc} = $genome_splice_sites{$type};}
-# 		}
-# 	}
-# }
+# calculates the counts for each nucleotide for the whole genome
+for my $cdsID (keys %splice_sites){
+	for my $type (keys %{ $splice_sites{$cdsID} }){
+		for my $site (keys %{ $splice_sites{$cdsID}{$type} }){
+			for (my $i = 0; $i <= 4; $i++){
+				my $nuc = substr($site, $i, 1);
+				if (exists $genome_splice_site_count{$type}{$i + 1}{$nuc}) {$genome_splice_site_count{$type}{$i + 1}{$nuc} += $splice_sites{$cdsID}{$type}{$site};}
+				else {$genome_splice_site_count{$type}{$i + 1}{$nuc}++;}
+			}
+		}
+	}
+}
 # print Dumper %genome_splice_site_count;
 
 # calculates the frequency of each nucleotide at each position for splice donors/acceptors
-# for my $type (keys %genome_splice_site_count){
-# 	for (my $i = 1; $i <= 5; $i++){
-# 		my $a = $genome_splice_site_count{$type}{$i}{a};
-# 		my $c = $genome_splice_site_count{$type}{$i}{c};
-# 		my $g = $genome_splice_site_count{$type}{$i}{g};
-# 		my $t = $genome_splice_site_count{$type}{$i}{t};
-# 		my $total = $a + $c + $g + $t;
-# 
-# 		$genome_splice_site_freq{$type}{$i}{a} = $a/$total;
-# 		$genome_splice_site_freq{$type}{$i}{c} = $c/$total;
-# 		$genome_splice_site_freq{$type}{$i}{g} = $g/$total;
-# 		$genome_splice_site_freq{$type}{$i}{t} = $t/$total;
-# 	}
-# }
+for my $type (keys %genome_splice_site_count){
+	for (my $i = 1; $i <= 5; $i++){
+		my $a = $genome_splice_site_count{$type}{$i}{a};
+		my $c = $genome_splice_site_count{$type}{$i}{c};
+		my $g = $genome_splice_site_count{$type}{$i}{g};
+		my $t = $genome_splice_site_count{$type}{$i}{t};
+		my $total = $a + $c + $g + $t;
+
+		$genome_splice_site_freq{$type}{$i}{a} = $a/$total;
+		$genome_splice_site_freq{$type}{$i}{c} = $c/$total;
+		$genome_splice_site_freq{$type}{$i}{g} = $g/$total;
+		$genome_splice_site_freq{$type}{$i}{t} = $t/$total;
+	}
+}
 # print Dumper %genome_splice_site_freq;
+
+# calculates the probability of finding a splice site
+for my $cdsID (keys %splice_sites){
+	for my $type (keys %{$splice_sites{$cdsID} }){
+		for my $site (keys %{ $splice_sites{$cdsID}{$type} }){
+			my (@nuc, @freq);
+			for (my $i = 0; $i <= 4; $i++){
+				$nuc[$i] = substr($site, $i, 1);
+				$freq[$i] = $genome_splice_site_freq{$type}{$i + 1}{$nuc[$i]};
+			}
+			my $num_of_occurances = $splice_sites{$cdsID}{$type}{$site};
+			my $site_freq = $freq[0] * $freq[1] * $freq[2] * $freq[3] * $freq[4] * $num_of_occurances; # all the individual frequencies for each site and the number of times that site occurs
+			
+			if (exists $splice_site_probability{$cdsID}{$type}{freq}) {$splice_site_probability{$cdsID}{$type}{freq} += $site_freq;}
+			else {$splice_site_probability{$cdsID}{$type}{freq} = $site_freq;}
+			if (exists $splice_site_probability{$cdsID}{$type}{count}) {$splice_site_probability{$cdsID}{$type}{count} += $num_of_occurances;}
+			else {$splice_site_probability{$cdsID}{$type}{count} = $num_of_occurances;}
+		}
+	}
+}
+# print Dumper %splice_site_probability;
+
+# calculates the average of the probabilities for each CDS
+for my $cdsID (keys %splice_site_probability){
+	for my $type (keys % {$splice_site_probability{$cdsID} }){
+		my $freq = $splice_site_probability{$cdsID}{$type}{freq};
+		my $count = $splice_site_probability{$cdsID}{$type}{count};
+		$splice_site_probability{$cdsID}{$type}{avg} = $freq/$count;
+	}
+}
+# print Dumper %splice_site_probability;
+
+# prints the cdsID, chromosome, and avg frequency of finding the splice site for a certain user specified type (donor or acceptor)
+for my $cdsID (keys %splice_site_probability) {
+	my $chromosome = $exon_coords{$cdsID}{chromosome};
+	my $avg = $splice_site_probability{$cdsID}{$desired_type}{avg};
+	print"$avg,$chromosome,$cdsID\n";
+}
 
 #################
 ###SUBROUTINES###
@@ -156,9 +196,6 @@ sub extract_splice_sites{
 		# extract 5 bases after the stop codon
 		$splice1 = substr($sequence, $stop, 5); # wants to start at the base after the stop codon
 		if ($strand eq "+"){
-			# stores in a hash for keep count for the whole genome
-			if (exists $genome_splice_sites{donor}{$splice1}) {$genome_splice_sites{donor}{$splice1}++;}
-			else {$genome_splice_sites{donor}{$splice1} = 1;}
 			# stores in a hash to keep count for each CDS
 			if (exists $splice_sites{$cdsID}{donor}{$splice1}) {$splice_sites{$cdsID}{donor}{$splice1}++;}
 			else {$splice_sites{$cdsID}{donor}{$splice1} = 1;}
@@ -166,9 +203,6 @@ sub extract_splice_sites{
 		if ($strand eq "-"){
 			$splice1 =~ tr/acgt/tgca/;
 			$splice1 = reverse($splice1);
-			# stores in a hash for keep count for the whole genome
-			if (exists $genome_splice_sites{acceptor}{$splice1}) {$genome_splice_sites{acceptor}{$splice1}++;}
-			else {$genome_splice_sites{acceptor}{$splice1} = 1;}
 			# stores in a hash to keep count for each CDS
 			if (exists $splice_sites{$cdsID}{acceptor}{$splice1}) {$splice_sites{$cdsID}{acceptor}{$splice1}++;}
 			else {$splice_sites{$cdsID}{acceptor}{$splice1} = 1;}
@@ -179,9 +213,6 @@ sub extract_splice_sites{
 		# extract 2 bases before the start codon
 		$splice2 = substr($sequence, $start - 6, 5); # wants to start 2 bases before the start codon
 		if ($strand eq "+"){
-			# stores in a hash for keep count for the whole genome
-			if (exists $genome_splice_sites{acceptor}{$splice2}) {$genome_splice_sites{acceptor}{$splice2}++;}
-			else {$genome_splice_sites{acceptor}{$splice2} = 1;}
 			# stores in a hash to keep count for each CDS
 			if (exists $splice_sites{$cdsID}{acceptor}{$splice2}) {$splice_sites{$cdsID}{acceptor}{$splice2}++;}
 			else {$splice_sites{$cdsID}{acceptor}{$splice2} = 1;}
@@ -189,9 +220,6 @@ sub extract_splice_sites{
 		if ($strand eq "-"){
 			$splice2 =~ tr/acgt/tgca/;
 			$splice2 = reverse($splice2);
-			# stores in a hash for keep count for the whole genome
-			if (exists $genome_splice_sites{donor}{$splice2}) {$genome_splice_sites{donor}{$splice2}++;}
-			else {$genome_splice_sites{donor}{$splice2} = 1;}
 			# stores in a hash to keep count for each CDS
 			if (exists $splice_sites{$cdsID}{donor}{$splice2}) {$splice_sites{$cdsID}{donor}{$splice2}++;}
 			else {$splice_sites{$cdsID}{donor}{$splice2} = 1;}
@@ -203,11 +231,6 @@ sub extract_splice_sites{
 		$splice1 = substr($sequence, $stop, 5);
 		$splice2 = substr($sequence, $start - 6, 5);
 		if ($strand eq "+"){
-			# stores in a hash for keep count for the whole genome
-			if (exists $genome_splice_sites{donor}{$splice1}) {$genome_splice_sites{donor}{$splice1}++;}
-			else {$genome_splice_sites{donor}{$splice1} = 1;}
-			if (exists $genome_splice_sites{acceptor}{$splice2}) {$genome_splice_sites{acceptor}{$splice2}++;}
-			else {$genome_splice_sites{acceptor}{$splice2} = 1;}
 			# stores in a hash to keep count for each CDS
 			if (exists $splice_sites{$cdsID}{donor}{$splice1}) {$splice_sites{$cdsID}{donor}{$splice1}++;}
 			else {$splice_sites{$cdsID}{donor}{$splice1} = 1;}
@@ -219,11 +242,6 @@ sub extract_splice_sites{
 			$splice1 = reverse($splice1);
 			$splice2 =~ tr/acgt/tgca/;
 			$splice2 = reverse($splice2);
-			# stores in a hash for keep count for the whole genome
-			if (exists $genome_splice_sites{acceptor}{$splice1}) {$genome_splice_sites{acceptor}{$splice1}++;}
-			else {$genome_splice_sites{acceptor}{$splice1} = 1;}
-			if (exists $genome_splice_sites{donor}{$splice2}) {$genome_splice_sites{donor}{$splice2}++;}
-			else {$genome_splice_sites{donor}{$splice2} = 1;}
 			# stores in a hash to keep count for each CDS
 			if (exists $splice_sites{$cdsID}{acceptor}{$splice1}) {$splice_sites{$cdsID}{acceptor}{$splice1}++;}
 			else {$splice_sites{$cdsID}{acceptor}{$splice1} = 1;}
@@ -232,10 +250,4 @@ sub extract_splice_sites{
 		}
 # 		print"$splice1 \t $splice2\n";
 	}
-}
-
-__END__
-# determines intron composition
-sub intron_comp{
-	
 }
