@@ -46,6 +46,9 @@ README.md
 ###genetic_algorithm_example.pl
 * example of a genetic algorithm using shapes and their areas 
 
+###intron_composition.pl
+* calculates the composition of the introns
+
 ###intron_length_distributions.R
 * plots the distribution of intron lengths
 
