@@ -4,7 +4,7 @@
 # calculates a z score for each gene based on various factors (does same thing as compare_gene_rankings.R)
 #
 # ranks genes by z score
-# ranks based on cds length, exon length, intron length, codon usage
+# ranks based on cds length, exon length, intron length, codon usage, donor splice site usage, acceptor splice site usage
 
 use strict; use warnings;
 use File::Slurp;
@@ -19,12 +19,18 @@ my @cds_length = read_file("cds_lengths.txt");
 my @exon_length = read_file("exon_lengths.txt");
 my @intron_length = read_file("intron_lengths.txt");
 my @codon_usage = read_file("gene_codon_usage_relative_entropies.txt");
+my @donor = read_file("splice_site_donor_usage.txt");
+my @acceptor = read_file("splice_site_acceptor_usage.txt");
 
 # adds the z scores to the respective arrays
 @cds_length = add_zscore_to_array(@cds_length);
 @exon_length = add_zscore_to_array(@exon_length);
 @intron_length = add_zscore_to_array(@intron_length);
 @codon_usage = add_zscore_to_array(@codon_usage);
+@donor = add_zscore_to_array(@donor);
+@acceptor = add_zscore_to_array(@acceptor);
+
+# print join("\n", @donor);
 
 # adds the z scores together and puts the info for the genes into a hash
 my %master;
@@ -32,6 +38,8 @@ add_zscores_together("cds", @cds_length);
 add_zscores_together("exon", @exon_length);
 add_zscores_together("intron", @intron_length);
 add_zscores_together("codon", @codon_usage);
+add_zscores_together("donor", @donor);
+add_zscores_together("acceptor", @acceptor);
 
 # finds the average z score for a gene's introns/exons if there are more than 1
 my @list = ("exon", "intron");
@@ -76,6 +84,14 @@ for my $key (keys %master){
 		$final_score += abs($master{$key}{codon}{zscore});
 		$count++;
 	}
+	if (exists $master{$key}{donor}){
+		$final_score += abs($master{$key}{donor}{zscore});
+		$count++;
+	}
+	if (exists $master{$key}{acceptor}){
+		$final_score += abs($master{$key}{acceptor}{zscore});
+		$count++;
+	}
 	$master{$key}{final_score} = $final_score / $count;
 	
 	# prints result
@@ -98,6 +114,12 @@ if ($gene ne "none"){
 			}
 			if (exists $master{$key}{codon}){
 				print"$key, codon, $master{$key}{codon}{zscore}\n";
+			}
+			if (exists $master{$key}{donor}){
+				print"$key, donor, $master{$key}{donor}{zscore}\n";
+			}
+			if (exists $master{$key}{acceptor}){
+				print"$key, acceptor, $master{$key}{acceptor}{zscore}\n";
 			}
 		}
 	}
