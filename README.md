@@ -28,8 +28,8 @@ README.md
 ###exon_intron_length_distribution.R
 * plots the distribution of exon and intron lengths
 
-###exon_intron_lengths.pl
-* calculates the lengths of exons and introns - current working version 
+###exon_lengths.pl
+* calculates the lengths of exons
 
 ###exon_intron_lengths_old.pl
 * calculates the lengths of exons and introns - old version
@@ -51,6 +51,9 @@ README.md
 
 ###intron_length_distributions.R
 * plots the distribution of intron lengths
+  
+###intron_lengths.pl
+* calculates the lengths of the introns 
 
 ###make_source_feature_file_multiple.pl
 * makes a file containing only the multiple desired source/feature combinations 
