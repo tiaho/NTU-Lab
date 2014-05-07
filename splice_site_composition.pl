@@ -39,17 +39,17 @@ for (my $i = 0; $i <= 5; $i++){
 
 # extracts the splice sites
 for my $cdsID (keys %exon_coords){
-	my $genome_seq;
+	my $chrom_seq;
 
 	if ($exon_coords{$cdsID}{count} == 1) {next;}
 	
 	# assigns the correct genomic sequence for each chromosome
-	if ($exon_coords{$cdsID}{chromosome} eq "I") {$genome_seq = $sequences[0];}
-	elsif ($exon_coords{$cdsID}{chromosome} eq "II") {$genome_seq = $sequences[1];}
-	elsif ($exon_coords{$cdsID}{chromosome} eq "III") {$genome_seq = $sequences[2];}
-	elsif ($exon_coords{$cdsID}{chromosome} eq "IV") {$genome_seq = $sequences[3];}
-	elsif ($exon_coords{$cdsID}{chromosome} eq "V") {$genome_seq = $sequences[4];}
-	elsif ($exon_coords{$cdsID}{chromosome} eq "X") {$genome_seq = $sequences[5];}
+	if ($exon_coords{$cdsID}{chromosome} eq "I") {$chrom_seq = $sequences[0];}
+	elsif ($exon_coords{$cdsID}{chromosome} eq "II") {$chrom_seq = $sequences[1];}
+	elsif ($exon_coords{$cdsID}{chromosome} eq "III") {$chrom_seq = $sequences[2];}
+	elsif ($exon_coords{$cdsID}{chromosome} eq "IV") {$chrom_seq = $sequences[3];}
+	elsif ($exon_coords{$cdsID}{chromosome} eq "V") {$chrom_seq = $sequences[4];}
+	elsif ($exon_coords{$cdsID}{chromosome} eq "X") {$chrom_seq = $sequences[5];}
 
 	for (my $i = 1; $i <= $exon_coords{$cdsID}{count}; $i++){
 		# extracts splice sites
@@ -57,7 +57,7 @@ for my $cdsID (keys %exon_coords){
 		if ($i == 1) {$position = "beg";}
 		elsif ($i == $exon_coords{$cdsID}{count}) {$position = "end";}
 		else {$position = "middle";}
-		extract_splice_sites($position, $genome_seq, $cdsID, $exon_coords{$cdsID}{strand}, $exon_coords{$cdsID}{$i}{start}, $exon_coords{$cdsID}{$i}{stop});
+		extract_splice_sites($position, $chrom_seq, $cdsID, $exon_coords{$cdsID}{strand}, $exon_coords{$cdsID}{$i}{start}, $exon_coords{$cdsID}{$i}{stop});
 	}
 	
 }
@@ -129,7 +129,7 @@ for my $cdsID (keys %splice_site_probability){
 for my $cdsID (keys %splice_site_probability) {
 	my $chromosome = $exon_coords{$cdsID}{chromosome};
 	my $avg = $splice_site_probability{$cdsID}{$desired_type}{avg};
-	print"$avg,$chromosome,$cdsID\n";
+	print"$avg, $chromosome, $cdsID\n";
 }
 
 #################
@@ -167,23 +167,6 @@ sub read_sequence{
     $sequence =~ s/\n//g; # removes all new lines
     
     return($sequence);
-}
-
-# extracts the coding sequence
-sub extract_cds{
-    my ($sequence, $cdsID, $strand, $start, $stop) = @_;
-
-	# extracts the sequence of the gene
-	my $cds_seq = substr($sequence, $start - 1, $stop + 1 - $start); # -1 b/c perl string starts at 0, + 1 to take account of last base
-	
-	# reverse strand -- will reverse later, so order of the exons don't get messed up
-# 	if ($strand eq "-"){
-# 		$cds_seq =~ tr/atcg/tagc/;
-# 		$cds_seq = reverse($cds_seq);
-# 	}
-	
-	if (exists $exon_coords{$cdsID}{seq}) {$exon_coords{$cdsID}{seq} .= $cds_seq;}
-	else {$exon_coords{$cdsID}{seq} = $cds_seq;}
 }
 
 # extracts the splice sites
