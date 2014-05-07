@@ -12,12 +12,12 @@ die "Please enter a gff file to be split\n" unless (@ARGV == 1);
 open (my $in, "<$file") or die "Cannot open $file\n";
 
 # gff file split by chromosome
-open (my $out1, ">chromI_master.gff2");
-open (my $out2, ">chromII_master.gff2");
-open (my $out3, ">chromIII_master.gff2");
-open (my $out4, ">chromIV_master.gff2");
-open (my $out5, ">chromV_master.gff2");
-open (my $out6, ">chromX_master.gff2");
+open (my $out1, ">chromI_gene_gene.gff2");
+open (my $out2, ">chromII_gene_gene.gff2");
+open (my $out3, ">chromIII_gene_gene.gff2");
+open (my $out4, ">chromIV_gene_gene.gff2");
+open (my $out5, ">chromV_gene_gene.gff2");
+open (my $out6, ">chromX_gene_gene.gff2");
 
 while (my $line = <$in>){
     chomp $line;
