@@ -9,12 +9,8 @@ use strict; use warnings;
 use File::Slurp;
 use Data::Dumper;
 
-### get the exon coordinates, extract exons, leaving only introns?
-### compare them by freq of A, C, G, T
-
-
 # hashes
-my (%exon_coords, %intron_coords, %genome_intron_info);
+my (%exon_coords, %intron_info, %genome_intron_info);
 
 # the input files
 my @fasta_files = ("xx01", "xx02", "xx03", "xx04", "xx05", "xx06");
@@ -36,64 +32,64 @@ for (my $i = 0; $i <= 5; $i++){
 for my $cdsID (keys %exon_coords){
 	next if ($exon_coords{$cdsID}{count} == 1);
 	for (my $i = 1; $i < $exon_coords{$cdsID}{count}; $i++){
-		$intron_coords{$cdsID}{$i}{start} = $exon_coords{$cdsID}{$i}{stop} + 1;
-		$intron_coords{$cdsID}{$i}{stop} = $exon_coords{$cdsID}{$i + 1}{start} - 1;
+		$intron_info{$cdsID}{$i}{start} = $exon_coords{$cdsID}{$i}{stop} + 1;
+		$intron_info{$cdsID}{$i}{stop} = $exon_coords{$cdsID}{$i + 1}{start} - 1;
 	}
-	$intron_coords{$cdsID}{strand} = $exon_coords{$cdsID}{strand};
-	$intron_coords{$cdsID}{chromosome} = $exon_coords{$cdsID}{chromosome};
-	$intron_coords{$cdsID}{count} = $exon_coords{$cdsID}{count} - 1;
+	$intron_info{$cdsID}{strand} = $exon_coords{$cdsID}{strand};
+	$intron_info{$cdsID}{chromosome} = $exon_coords{$cdsID}{chromosome};
+	$intron_info{$cdsID}{count} = $exon_coords{$cdsID}{count} - 1;
 }
-# print Dumper %intron_coords;
+# print Dumper %intron_info;
 
 # extracts the intron sequences
-for my $cdsID (keys %intron_coords){
+for my $cdsID (keys %intron_info){
 	my $chrom_seq;
 	
 	# assigns the correct genomic sequence for each chromosome
-	if ($intron_coords{$cdsID}{chromosome} eq "I") {$chrom_seq = $sequences[0];}
-	elsif ($intron_coords{$cdsID}{chromosome} eq "II") {$chrom_seq = $sequences[1];}
-	elsif ($intron_coords{$cdsID}{chromosome} eq "III") {$chrom_seq = $sequences[2];}
-	elsif ($intron_coords{$cdsID}{chromosome} eq "IV") {$chrom_seq = $sequences[3];}
-	elsif ($intron_coords{$cdsID}{chromosome} eq "V") {$chrom_seq = $sequences[4];}
-	elsif ($intron_coords{$cdsID}{chromosome} eq "X") {$chrom_seq = $sequences[5];}
-	for (my $i = 1; $i <= $intron_coords{$cdsID}{count}; $i++){
-		extract_intron_seq($chrom_seq, $cdsID, $intron_coords{$cdsID}{strand}, $intron_coords{$cdsID}{$i}{start}, $intron_coords{$cdsID}{$i}{stop});
+	if ($intron_info{$cdsID}{chromosome} eq "I") {$chrom_seq = $sequences[0];}
+	elsif ($intron_info{$cdsID}{chromosome} eq "II") {$chrom_seq = $sequences[1];}
+	elsif ($intron_info{$cdsID}{chromosome} eq "III") {$chrom_seq = $sequences[2];}
+	elsif ($intron_info{$cdsID}{chromosome} eq "IV") {$chrom_seq = $sequences[3];}
+	elsif ($intron_info{$cdsID}{chromosome} eq "V") {$chrom_seq = $sequences[4];}
+	elsif ($intron_info{$cdsID}{chromosome} eq "X") {$chrom_seq = $sequences[5];}
+	for (my $i = 1; $i <= $intron_info{$cdsID}{count}; $i++){
+		extract_intron_seq($chrom_seq, $cdsID, $intron_info{$cdsID}{strand}, $intron_info{$cdsID}{$i}{start}, $intron_info{$cdsID}{$i}{stop});
 	}
 	
 }
-# print Dumper %intron_coords;
+# print Dumper %intron_info;
 
 # calculates the counts for each nucleotide for the whole genome
-for my $cdsID (keys %intron_coords){
-	for (my $i = 0; $i < length($intron_coords{$cdsID}{seq}); $i++){
-		my $nuc = substr($intron_coords{$cdsID}{seq}, $i, 1);
+for my $cdsID (keys %intron_info){
+	for (my $i = 0; $i < length($intron_info{$cdsID}{seq}); $i++){
+		my $nuc = substr($intron_info{$cdsID}{seq}, $i, 1);
 		
 		# stores the counts in a hash for each individual gene 
-		if (exists $intron_coords{$cdsID}{counts}{$nuc}) {$intron_coords{$cdsID}{counts}{$nuc}++;}
-		else {$intron_coords{$cdsID}{counts}{$nuc} = 1;}
+		if (exists $intron_info{$cdsID}{counts}{$nuc}) {$intron_info{$cdsID}{counts}{$nuc}++;}
+		else {$intron_info{$cdsID}{counts}{$nuc} = 1;}
 		
 		# stores the counts in a hash to calculate the genome wide frequency of nucleotides in introns
 		if (exists $genome_intron_info{counts}{$nuc}) {$genome_intron_info{counts}{$nuc}++;}
 		else {$genome_intron_info{counts}{$nuc} = 1;}
 	}
 }
-# print Dumper %intron_coords;
+# print Dumper %intron_info;
 # print Dumper %genome_intron_info;
 
 # converts counts into frequencies (percentages) for the individual gene
-for my $cdsID (keys %intron_coords){
-	my $a = $intron_coords{$cdsID}{counts}{a};
-	my $c = $intron_coords{$cdsID}{counts}{c};
-	my $g = $intron_coords{$cdsID}{counts}{g};
-	my $t = $intron_coords{$cdsID}{counts}{t};
+for my $cdsID (keys %intron_info){
+	my $a = $intron_info{$cdsID}{counts}{a};
+	my $c = $intron_info{$cdsID}{counts}{c};
+	my $g = $intron_info{$cdsID}{counts}{g};
+	my $t = $intron_info{$cdsID}{counts}{t};
 	my $total = $a + $c + $g + $t;
 
-	$intron_coords{$cdsID}{freq}{a} = $a/$total;
-	$intron_coords{$cdsID}{freq}{c} = $c/$total;
-	$intron_coords{$cdsID}{freq}{g} = $g/$total;
-	$intron_coords{$cdsID}{freq}{t} = $t/$total;
+	$intron_info{$cdsID}{freq}{a} = $a/$total;
+	$intron_info{$cdsID}{freq}{c} = $c/$total;
+	$intron_info{$cdsID}{freq}{g} = $g/$total;
+	$intron_info{$cdsID}{freq}{t} = $t/$total;
 }
-# print Dumper %intron_coords;
+# print Dumper %intron_info;
 
 # converts counts into frequencies (percentages) for the genome
 my $a = $genome_intron_info{counts}{a};
@@ -111,28 +107,28 @@ $genome_intron_info{freq}{t} = $t/$total;
 
 # finds the KL distance for the frequency of each nucleotide in a gene to the frequency it is found in all introns genome wide
 my @nucleotides = ("a", "c", "g", "t");
-for my $cdsID (keys %intron_coords){
+for my $cdsID (keys %intron_info){
 	for my $nuc (@nucleotides){
-		my $P = $intron_coords{$cdsID}{freq}{$nuc};
+		my $P = $intron_info{$cdsID}{freq}{$nuc};
 		my $Q = $genome_intron_info{freq}{$nuc};
 		my $entropy = $P * log($P/$Q)/log(2);
-		$intron_coords{$cdsID}{entropy}{$nuc} = $entropy;
+		$intron_info{$cdsID}{entropy}{$nuc} = $entropy;
 	}
 }
-# print Dumper %intron_coords;
+# print Dumper %intron_info;
 
 # sums the entropies for each gene, to get the relative entropy
-for my $cdsID (keys %intron_coords){
-	$intron_coords{$cdsID}{entropy}{total} = 0;
+for my $cdsID (keys %intron_info){
+	$intron_info{$cdsID}{entropy}{total} = 0;
 	for my $nuc (@nucleotides){
-		$intron_coords{$cdsID}{entropy}{total} += $intron_coords{$cdsID}{entropy}{$nuc};
+		$intron_info{$cdsID}{entropy}{total} += $intron_info{$cdsID}{entropy}{$nuc};
 	}
 }
-# print Dumper %intron_coords;
+# print Dumper %intron_info;
 
 # prints the cdsID, chromosome, and relative entropy
-for my $cdsID (keys %intron_coords) {
-	print"$intron_coords{$cdsID}{entropy}{total}, $intron_coords{$cdsID}{chromosome}, $cdsID\n";
+for my $cdsID (keys %intron_info) {
+	print"$intron_info{$cdsID}{entropy}{total}, $intron_info{$cdsID}{chromosome}, $cdsID\n";
 }
 
 #################
@@ -178,13 +174,13 @@ sub extract_intron_seq{
 	
 	my $intron = substr($sequence, $start - 1, $stop - $start + 1); 
 	if ($strand eq "+"){
-		if (exists $intron_coords{$cdsID}{seq}) {$intron_coords{$cdsID}{seq} .= $intron;}
-		else {$intron_coords{$cdsID}{seq} = $intron;}
+		if (exists $intron_info{$cdsID}{seq}) {$intron_info{$cdsID}{seq} .= $intron;}
+		else {$intron_info{$cdsID}{seq} = $intron;}
 	}
 	if ($strand eq "-"){
 		$intron =~ tr/acgt/tgca/;
 		$intron = reverse($intron);
-		if (exists $intron_coords{$cdsID}{seq}) {$intron_coords{$cdsID}{seq} .= $intron;}
-		else {$intron_coords{$cdsID}{seq} = $intron;}
+		if (exists $intron_info{$cdsID}{seq}) {$intron_info{$cdsID}{seq} .= $intron;}
+		else {$intron_info{$cdsID}{seq} = $intron;}
 	}
 }
