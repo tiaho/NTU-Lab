@@ -44,6 +44,18 @@ add_zscores_together("donor", @donor);
 add_zscores_together("acceptor", @acceptor);
 add_zscores_together("intron_usage", @intron_usage);
 
+# # finds the average z score for a gene's introns/exons if there are more than 1
+# my @list = ("exon_length", "intron");
+# for my $i (@list){
+# 	for my $key (keys %master){
+# 		if (exists $master{$key}{$i}){
+# 			if ($master{$key}{$i}{count} > 1){
+# 				$master{$key}{$i}{avg_zscore} = $master{$key}{$i}{zscore} / $master{$key}{$i}{count};
+# 			}
+# 		}
+# 	}
+# }
+
 # calculates an average z score for each gene, and prints that result
 # takes absolute values of scores b/c we don't want + and - zscores to even each other out
 for my $key (keys %master){
@@ -55,22 +67,12 @@ for my $key (keys %master){
 		$count++;
 	}
 	if (exists $master{$key}{exon_length}){
-		if (exists $master{$key}{exon_length}{avg_zscore}){
-			$final_score += abs($master{$key}{exon_length}{avg_zscore});
-			$count++;
-		}else{
-			$final_score += abs($master{$key}{exon_length}{zscore});
-			$count++;
-		}
+		$final_score += abs($master{$key}{exon_length}{zscore});
+		$count++;
 	}
 	if (exists $master{$key}{intron_length}){
-		if (exists $master{$key}{intron_length}{avg_zscore}){
-			$final_score += abs($master{$key}{intron_length}{avg_zscore});
-			$count++;
-		}else{
-			$final_score += abs($master{$key}{intron_length}{zscore});
-			$count++;
-		}
+		$final_score += abs($master{$key}{intron_length}{zscore});
+		$count++;
 	}
 	if (exists $master{$key}{codon}){
 		$final_score += abs($master{$key}{codon}{zscore});
