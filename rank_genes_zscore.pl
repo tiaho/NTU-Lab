@@ -4,7 +4,7 @@
 # calculates a z score for each gene based on various factors (does same thing as compare_gene_rankings.R)
 #
 # ranks genes by z score
-# ranks based on cds length, exon length, intron length, codon usage, donor splice site usage, acceptor splice site usage
+# ranks based on cds length, exon length, intron length, codon usage, donor splice site usage, acceptor splice site usage, intron usage
 
 use strict; use warnings;
 use File::Slurp;
@@ -21,6 +21,7 @@ my @intron_length = read_file("intron_lengths.txt");
 my @codon_usage = read_file("gene_codon_usage_relative_entropies.txt");
 my @donor = read_file("splice_site_donor_usage.txt");
 my @acceptor = read_file("splice_site_acceptor_usage.txt");
+my @intron_usage = read_file("intron_usage.txt");
 
 # adds the z scores to the respective arrays
 @cds_length = add_zscore_to_array(@cds_length);
@@ -29,6 +30,7 @@ my @acceptor = read_file("splice_site_acceptor_usage.txt");
 @codon_usage = add_zscore_to_array(@codon_usage);
 @donor = add_zscore_to_array(@donor);
 @acceptor = add_zscore_to_array(@acceptor);
+@intron_usage = add_zscore_to_array(@intron_usage);
 
 # print join("\n", @donor);
 
@@ -40,6 +42,7 @@ add_zscores_together("intron", @intron_length);
 add_zscores_together("codon", @codon_usage);
 add_zscores_together("donor", @donor);
 add_zscores_together("acceptor", @acceptor);
+add_zscores_together("intron_usage", @intron_usage);
 
 # finds the average z score for a gene's introns/exons if there are more than 1
 my @list = ("exon", "intron");
@@ -92,6 +95,10 @@ for my $key (keys %master){
 		$final_score += abs($master{$key}{acceptor}{zscore});
 		$count++;
 	}
+	if (exists $master{$key}{intron_usage}){
+		$final_score += abs($master{$key}{intron_usage}{zscore});
+		$count++;
+	}
 	$master{$key}{final_score} = $final_score / $count;
 	
 	# prints result
@@ -120,6 +127,9 @@ if ($gene ne "none"){
 			}
 			if (exists $master{$key}{acceptor}){
 				print"$key, acceptor, $master{$key}{acceptor}{zscore}\n";
+			}
+			if (exists $master{$key}{intron_usage}){
+				print"$key, intron_usage, $master{$key}{intron_usage}{zscore}\n";
 			}
 		}
 	}
