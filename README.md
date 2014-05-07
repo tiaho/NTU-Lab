@@ -28,14 +28,14 @@ README.md
 ###exon_intron_length_distribution.R
 * plots the distribution of exon and intron lengths
 
-###exon_lengths.pl
-* calculates the lengths of exons
-
 ###exon_intron_lengths_old.pl
 * calculates the lengths of exons and introns - old version
 
 ###exon_length_distributions.R
 * plots the distribution of exon lengths
+
+###exon_lengths.pl
+* calculates the lengths of exons
 
 ###frameshifts.pl
 * checks for frameshifts
