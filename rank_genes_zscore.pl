@@ -15,15 +15,28 @@ die "Enter a gene to get the score breakdown for or enter 'none'" unless @ARGV =
 my $gene = $ARGV[0];
 
 # reads in the files
-my @cds_length = read_file("cds_lengths.txt");
-my @exon_length = read_file("exon_lengths.txt");
-my @intron_length = read_file("intron_lengths.txt");
-my @codon_usage = read_file("gene_codon_usage_relative_entropies.txt");
-my @donor = read_file("splice_site_donor_usage.txt");
-my @acceptor = read_file("splice_site_acceptor_usage.txt");
-my @intron_usage = read_file("intron_usage.txt");
+my @cds_length = read_file("log_cds_lengths.txt");
+my @exon_length = read_file("log_exon_lengths.txt");
+my @intron_length = read_file("log_intron_lengths.txt");
+my @codon_usage = read_file("log_gene_codon_usage_relative_entropies.txt");
+my @donor = read_file("log_splice_site_donor_usage.txt");
+my @acceptor = read_file("log_splice_site_acceptor_usage.txt");
+my @intron_usage = read_file("log_intron_usage.txt");
+
+# log transformation
+my @factors = (@cds_length, @exon_length, @intron_length, @codon_usage, @donor, @acceptor, @intron_usage);
+
 
 # adds the z scores to the respective arrays
+# foreach my $fac (@factors){
+# # 	# log transforms the scores
+# # 	foreach my $score ($fac){
+# # 		$score = log($score);
+# # 	}
+# 	# adds z scores to respective arrays
+# 	$fac = add_zscore_to_array($fac)
+# }
+
 @cds_length = add_zscore_to_array(@cds_length);
 @exon_length = add_zscore_to_array(@exon_length);
 @intron_length = add_zscore_to_array(@intron_length);

@@ -115,7 +115,8 @@ for my $cdsID (keys %gene_codon_usage){
 # prints the cdsID, choromosome, and relative entropy
 if ($desiredID eq "none"){
 	for my $key (keys %gene_codon_entropy){
-		print"$gene_codon_entropy{$key}{relative_entropy}, $gene_codon_usage{$key}{chromosome}, $key\n";
+		my $entropy = log($gene_codon_entropy{$key}{relative_entropy});
+		print"$entropy, $gene_codon_usage{$key}{chromosome}, $key\n";
 	}
 }
 

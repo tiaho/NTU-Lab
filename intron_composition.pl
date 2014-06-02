@@ -128,7 +128,8 @@ for my $cdsID (keys %intron_info){
 
 # prints the cdsID, chromosome, and relative entropy
 for my $cdsID (keys %intron_info) {
-	print"$intron_info{$cdsID}{entropy}{total}, $intron_info{$cdsID}{chromosome}, $cdsID\n";
+	my $entropy = log($intron_info{$cdsID}{entropy}{total});
+	print"$entropy, $intron_info{$cdsID}{chromosome}, $cdsID\n";
 }
 
 #################

@@ -128,7 +128,7 @@ for my $cdsID (keys %splice_site_probability){
 # prints the cdsID, chromosome, and avg frequency of finding the splice site for a certain user specified type (donor or acceptor)
 for my $cdsID (keys %splice_site_probability) {
 	my $chromosome = $exon_coords{$cdsID}{chromosome};
-	my $avg = $splice_site_probability{$cdsID}{$desired_type}{avg};
+	my $avg = log($splice_site_probability{$cdsID}{$desired_type}{avg});
 	print"$avg, $chromosome, $cdsID\n";
 }
 

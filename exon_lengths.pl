@@ -50,7 +50,8 @@ for my $cdsID (keys %exon_info){
 
 # prints the cdsID, chromosome, and avg intron length
 for my $cdsID (keys %exon_info) {
-	print"$exon_info{$cdsID}{lengths}{avg}, $exon_info{$cdsID}{chromosome}, $cdsID\n";
+	my $length = log($exon_info{$cdsID}{lengths}{avg});
+	print"$length, $exon_info{$cdsID}{chromosome}, $cdsID\n";
 }
 
 #################

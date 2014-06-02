@@ -75,6 +75,6 @@ sub extract_cds{
 # gets a list of CDS lengths
 sub get_CDS_length{
     my ($key, $cds_seq_ref) = @_;
-    my $length = length($$cds_seq_ref{$key}{cds});
+    my $length = log(length($$cds_seq_ref{$key}{cds}));
     print"$length, $$cds_seq_ref{$key}{chromosome}, $key\n";
 }
