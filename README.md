@@ -25,12 +25,6 @@ README.md
 ###compare_support_for_isoforms.pl
 * wrapper script for coordinate_extracter.pl and find_overlapping_features2.pl
 
-###exon_intron_length_distribution.R
-* plots the distribution of exon and intron lengths
-
-###exon_intron_lengths_old.pl
-* calculates the lengths of exons and introns - old version
-
 ###exon_length_distributions.R
 * plots the distribution of exon lengths
 
@@ -67,9 +61,6 @@ README.md
 ###rank_genes_zscore.pl
 * calculates a z score for each gene based on various factors (does same thing as compare_gene_rankings.R)
 
-###sanity_check_OLD_SCRIPT.pl
-* old script, refer to start_stop_codon_usage_cds_length.pl
-
 ###splice_site_composition.pl
 * calculates the composition of the splice sites
 
@@ -81,11 +72,3 @@ README.md
 
 ###start_stop_codon_composition.pl
 * calculates the composition of start and stop codons
-
-###start_stop_codon_usage_cds_length.pl
-* does too many things...
-    * prints the start/stop codons and counts
-    * check if start coordinate > stop coordinate
-    * prints the codon usage counts for all the coding sequences
-    * prints the CDS lengths
-    * checks for frameshifts
