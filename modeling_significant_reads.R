@@ -117,22 +117,15 @@ for (a in 1:length(unique(summary.df$summary.sample))){
 
   for (b in 1:length(unique(summary.level))){
     tmpdflevel <- subset(tmpdfsample, summary.level == unique(tmpdfsample$summary.level)[b])
-    print(paste(a,b))
+#     print(paste(a,b))
     # plots mean
 #     plot(x = tmpdflevel$summary.number.of.reads, y = tmpdflevel$summary.mean, col = as.factor(tmpdflevel$summary.group),
-#          main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]),
+#          main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]), ylim = c(0, max(tmpdfsample$summary.mean, na.rm = T)),
 #          xlab = "Number of Reads", ylab = paste("Mean of % of", unique(summary.level)[b], "represented"))
-    # plots standard deviation
+#     # plots standard deviation
     plot(x = tmpdflevel$summary.number.of.reads, y = tmpdflevel$summary.stdev, col = as.factor(tmpdflevel$summary.group),
-         main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]),
-         xlab = "Number of Reads", ylab = paste("Standard Deviation of % of", unique(summary.level)[b], "represented"))
-    # plots standard errors
-#     for (c in 1:length(unique(summary.group))){
-#       tmpdfgroup <- subset(tmpdflevel, summary.group == unique(tmpdflevel$summary.group[c]))
-#       arrows(x0 = tmpdflevel$summary.number.of.reads, y0 = tmpdflevel$summary.mean,
-#              x1 = tmpdflevel$summary.mean + tmpdflevel$summary.conflev, y1 = tmpdflevel$summary.mean - tmpdflevel$summary.conflev,
-#              code=3,length=0.2,angle=90,col='red')
-#     }
+         main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]), ylim = c(0, max(tmpdfsample$summary.stdev, na.rm = T)),
+         xlab = "Number of Reads" , ylab = paste("Standard Deviation of % of", unique(summary.level)[b], "represented"), cex.lab = 0.75)
   }
 }
 
