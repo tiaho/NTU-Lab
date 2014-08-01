@@ -2,7 +2,8 @@
 # Tiffany Ho
 # 07/09/2014
 
-# models the NGS reads to determine what amount of reads is "significant"
+# models NSG (Next Generation Sequencing) reads in R to determine the optimal amount of reads needed for future sequencing projects
+# (to minimize cost and to maximize accuracy)
   
 # changes the working directory
 setwd("~/Desktop/NTU Lab/")
