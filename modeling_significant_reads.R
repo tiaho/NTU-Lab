@@ -40,7 +40,6 @@ par(mfrow = c(2,2))
 
 # runs the simulation for each sample
 for (i in sample.names){
-# for (i in "ZT2-I1"){
   sample <- subset(data, SampleName == i)  # gets the sample
 
   # makes 2 vectors to keep track of % reads and % of level represented
@@ -49,7 +48,6 @@ for (i in sample.names){
   
   # runs the simulation for each of the levels (phylum, class, order, family)
   for (j in data.levels){
-#   for (j in "Phylum"){
     sample.level <- subset(sample, Level == j) # only wants the data from individual levels
 
     # make a new data frame to sample from
@@ -59,7 +57,6 @@ for (i in sample.names){
     for (k in 1:nrow(sample.level)){
       tmp <- rep(as.character(sample.level$Group[k]), sample.level$Reads[k]) # puts the reps for each group into a temp vector
       sample.level.data <- c(sample.level.data, tmp) # combines the existing vector with the temp vector
-#       print(sample.level.data)
     }
 
     # runs the simulation for each of the % read values
@@ -71,10 +68,7 @@ for (i in sample.names){
       # runs the simulation 100 times
       for (n in 1:100){
         samples <- sample(sample.level.data, as.integer(m * length(sample.level.data)), replace = TRUE) # samples from the data frame
-#         tmptable <- c(tmptable, as.vector(table(samples)/length(samples) * 100))
         tmptable <- table(samples)/length(samples) * 100
-
-#         names(table(samples)[1])
 
         # fills in 2 vectors with the level and % of each group represented
         level.data <- c(level.data, names(tmptable))
@@ -92,7 +86,8 @@ for (i in sample.names){
 
       # calculates the mean and standard deviations for each group of the level at each % of total reads sampling point
       for (v in 1:length(level.names)){
-        tmpdataframe <- subset(level.percentage.data, level.data == as.character(level.names[v]))
+        tmpdataframe <- subset(level.percentage.data, level.data == as.character(level.names[v])
+                               )
       # vectors with: sample, level, % read, standard deviation
         summary.sample <- c(summary.sample, i)
         summary.level <- c(summary.level, j)
@@ -108,7 +103,6 @@ for (i in sample.names){
 
 # makes a data frame of the summary
 summary.df <- data.frame(summary.sample, summary.level, summary.percent.reads, summary.number.of.reads, summary.group, summary.stdev, summary.mean)
-# summary.df$summary.conflev <- summary.stdev / 10 * 1.96
 
 # plots
 for (a in 1:length(unique(summary.df$summary.sample))){
@@ -117,12 +111,11 @@ for (a in 1:length(unique(summary.df$summary.sample))){
 
   for (b in 1:length(unique(summary.level))){
     tmpdflevel <- subset(tmpdfsample, summary.level == unique(tmpdfsample$summary.level)[b])
-#     print(paste(a,b))
     # plots mean
-#     plot(x = tmpdflevel$summary.number.of.reads, y = tmpdflevel$summary.mean, col = as.factor(tmpdflevel$summary.group),
-#          main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]), ylim = c(0, max(tmpdfsample$summary.mean, na.rm = T)),
-#          xlab = "Number of Reads", ylab = paste("Mean of % of", unique(summary.level)[b], "represented"))
-#     # plots standard deviation
+    plot(x = tmpdflevel$summary.number.of.reads, y = tmpdflevel$summary.mean, col = as.factor(tmpdflevel$summary.group),
+         main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]), ylim = c(0, max(tmpdfsample$summary.mean, na.rm = T)),
+         xlab = "Number of Reads", ylab = paste("Mean of % of", unique(summary.level)[b], "represented"))
+    # plots standard deviation
     plot(x = tmpdflevel$summary.number.of.reads, y = tmpdflevel$summary.stdev, col = as.factor(tmpdflevel$summary.group),
          main = paste(unique(summary.df$summary.sample)[a], unique(summary.level)[b]), ylim = c(0, max(tmpdfsample$summary.stdev, na.rm = T)),
          xlab = "Number of Reads" , ylab = paste("Standard Deviation of % of", unique(summary.level)[b], "represented"), cex.lab = 0.75)
